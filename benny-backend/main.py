@@ -6,7 +6,9 @@ from typing import List, Optional
 import uvicorn
 import datetime
 import sys
+import os
 from pathlib import Path
+
 from config import SECRET_KEY
 from routers import auth, users
 import httpx
@@ -15,20 +17,28 @@ import httpx
 bennydb_path = Path(__file__).parent.parent/"bennyDB"
 sys.path.append(str(bennydb_path))
 
+# Import database
 import db_connector_real
 db = db_connector_real.wellness_ai_db()
 print("Database connected successfully!")
 
 
 app = FastAPI()
+
+# Get CORS origins from environment variable
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
+allowed_origins = [
+    frontend_url,
+    "http://localhost:5173",  # Vite dev
+    "http://localhost:3000",  # Create React App dev
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:3000"
+]
+
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Vite
-        "http://localhost:3000",  # Create React App
-        "http://127.0.0.1:5173",
-        "http://127.0.0.1:3000"
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -53,7 +63,7 @@ async def root():
     """API info endpoint"""
     return {
         "service": "Benny Daily Check-in Backend",
-        "database_connected": db is not None,
+        "database_connected": True,
     }
 
 @app.get("/health")
@@ -61,15 +71,14 @@ async def health_check():
     """Health check endpoint"""
     return {
         "status": "healthy", 
-        "database_connected": db is not None,
+        "database_connected": True,
     }
 
 @app.post("/api/checkin/submit")
 async def submit_checkin(submission: CheckInSubmission):
     """Submit daily check-in responses"""
     
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not connected")
+    database_saved = False
 
     try:
         # Get today's date
@@ -81,26 +90,28 @@ async def submit_checkin(submission: CheckInSubmission):
         for response in submission.responses:
             checkin_data[response.category] = response.response
         
-        print(f"Saving check-in for {today}: {checkin_data}")
+        print(f"Processing check-in for {today}: {checkin_data}")
         
-        # Simple database insert
+        # Save to database
         db.run_query("""
             INSERT INTO daily_log_table 
             (log_date, nutrition, sleep_quality, stress_level, activity_complete, activity_name, user_program_row_id, activity_addresses_goal)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """, today, checkin_data.get("nutrition"), checkin_data.get("sleep"), 
             checkin_data.get("stress"), 1, "Daily Check-in", 1, 1)
-        
         print(f"Saved to database")
+        database_saved = True
 
         # Call AI for recommendation
         benny_recommendation = None
         try:
             import httpx
-
+            
+            ai_service_url = os.getenv("AI_SERVICE_URL", "http://127.0.0.1:8001")
+            
             async with httpx.AsyncClient() as client:
                 ai_response = await client.post(
-                    "http://127.0.0.1:8001/recommend",
+                    f"{ai_service_url}/recommend",
                     json={"daily_checkin": checkin_data},
                     timeout=30.0
                 )
@@ -133,8 +144,6 @@ async def get_recent_chat_messages():
     Get the last 10 recent chat messages
     """
 
-    if not db:
-        raise HTTPException(status_code=500, detail="Database not connected")
     
     # Add this in to query individual user history
     # user_id = current_user['user']['sub']

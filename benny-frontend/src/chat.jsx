@@ -5,7 +5,9 @@ import ChatInput from './components/ChatInput';
 import bennyIcon from './assets/benny_icon.png';
 import { useTypingEffect } from './hooks/useTypingEffect';
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:8001';
+console.log('API_URL:', API_URL);
+console.log('Environment check - VITE_AI_SERVICE_URL:', import.meta.env.VITE_AI_SERVICE_URL);
 
 const GREETING_PROMPTS = [
   "Hi, I can help with nutrition, fitness, and stress. Where would you like to start?",
@@ -44,12 +46,15 @@ function Chat() {
     }
 
     try {
+      console.log('Making request to:', `${API_URL}/chat`, 'with message:', userInput);
       const res = await axios.post(`${API_URL}/chat`, { message: userInput });
+      console.log('API Response:', res.data);
       let aiMessage = { type: 'ai', text: res.data.response || "Sorry, something went wrong." };
       // This will correctly append the AI response to the new message history
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error("Failed to send message:", error);
+      console.error("Error details:", error.response?.status, error.response?.data, error.message);
       let errorMessage = "Sorry, I couldn't connect to the server.";
       if (error.response && error.response.data && error.response.data.response) {
         errorMessage = error.response.data.response;

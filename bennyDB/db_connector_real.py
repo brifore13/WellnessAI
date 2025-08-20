@@ -7,18 +7,24 @@ import datetime
 import requests
 import sqlite3
 import pathlib
+import os
+import urllib.parse
 
 
-FRONTEND_URL = "http://localhost:5173/"
-BENNY_AI_URL = "http://127.0.0.1:8001"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173/")
+BENNY_AI_URL = os.getenv("AI_SERVICE_URL", "http://127.0.0.1:8001")
 
 DATABASE_PATH = pathlib.Path(__file__).parent / "BennyDB.sqlite3"
 
 
 class wellness_ai_db:
     def __init__(self):
+        # Use SQLite for local development
         self.db = sqlite3.connect(DATABASE_PATH)
         self.cursor = self.db.cursor()
+        self.is_postgres = False
+        print("Connected to SQLite database")
+        
         self.create_sql_possible_preferences_table()
         self.create_sql_user_preferences_table()
         self.create_sql_create_ideal_plan_table()
@@ -26,7 +32,7 @@ class wellness_ai_db:
         self.create_check_in_question_table()
         self.create_chat_history_table()
         self.create_chat_history_entry_table()
-        print("initialized")
+        print("Database initialized")
 
 
     #generic run-query function
