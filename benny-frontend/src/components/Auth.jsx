@@ -4,7 +4,7 @@ import siteIcon from '../assets/site_icon.png';
 import { useSession } from '../contexts/SessionContext';
 
 // base URL for FastAPI backend
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const { login } = useSession();

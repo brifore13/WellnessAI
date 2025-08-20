@@ -3,7 +3,7 @@ import axios from 'axios';
 import bennyIcon from './assets/benny_icon.png';
 import { FaHistory } from 'react-icons/fa';
 
-const BACKEND_URL = 'http://127.0.0.1:8000';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000';
 
 const ChatHistory = () => {
     const [recentMessages, setRecentMessages] = useState([]);

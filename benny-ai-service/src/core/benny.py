@@ -9,9 +9,14 @@ from pathlib import Path
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 
-# import db
+# import db conditionally - only if available locally
 sys.path.append(str(Path(__file__).parent.parent.parent.parent / "bennyDB"))
-import db_connector_real
+try:
+    import db_connector_real
+    DB_AVAILABLE = True
+except ImportError:
+    print("Database module not available - running without database features")
+    DB_AVAILABLE = False
 
 # Load environment variables
 load_dotenv()
@@ -87,8 +92,11 @@ class BennyWellnessAI:
         # conversation tracking
         self.conversation_history = []
 
-        # db connection
-        self.db = db_connector_real.wellness_ai_db()
+        # db connection - only initialize if available
+        if DB_AVAILABLE:
+            self.db = db_connector_real.wellness_ai_db()
+        else:
+            self.db = None
         
         print("Benny initialized successful!")
 
@@ -114,6 +122,10 @@ class BennyWellnessAI:
     
     async def _save_chat_to_db(self, user_message: str, benny_response: str):
         """Save chat to database"""
+        if not self.db:
+            print("Database not available, skipping chat save")
+            return
+            
         try:
             today = datetime.now().strftime("%m/%d/%Y")
 

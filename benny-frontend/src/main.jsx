@@ -18,9 +18,10 @@ createRoot(document.getElementById('root')).render(
     <SessionProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />} />
-
+          <Route path="/auth" element={<App />} />
+          
           <Route element={<ProtectedLayout />}>
+            <Route path="/" element={<Chat />} />
             <Route path="/chat" element={<Chat />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/chat-history" element={<ChatHistory />} />

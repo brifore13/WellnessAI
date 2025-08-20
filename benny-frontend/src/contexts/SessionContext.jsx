@@ -16,7 +16,7 @@ export const SessionProvider = ({ children }) => {
  const token = localStorage.getItem('authToken');
  if (token) {
  try {
- const res = await axios.get('http://localhost:8000/api/v1/users/me', {
+ const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'}/api/v1/users/me`, {
  headers: { Authorization: `Bearer ${token}` }
  });
  setSession({ user: res.data.user, token });
