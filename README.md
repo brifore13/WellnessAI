@@ -130,7 +130,6 @@ class BennyWellnessAI:
         return response
 ```
 
-![Chat Interface](./assets/chat-demo.gif)
 
 ### 🎯 **Goal Prioritization System**
 Advanced drag-and-drop interface for ranking wellness objectives with visual feedback.
@@ -152,7 +151,6 @@ const handleDragEnd = ({ active, over }) => {
 };
 ```
 
-![Goal Prioritization](./assets/goals-demo.gif)
 
 ### 📊 **Daily Wellness Assessments**
 Structured health tracking with AI-powered personalized recommendations.
@@ -199,7 +197,6 @@ const handleButtonClick = async (buttonText) => {
 };
 ```
 
-![Daily Check-in](./assets/checkin-demo.gif)
 
 ### 🔒 **Enterprise-Grade Security**
 Comprehensive OAuth 2.0 authentication with multiple provider support and session management.
@@ -260,29 +257,6 @@ const animatedGreeting = useTypingEffect(initialMessageText, 20);
 
 ---
 
-## 📈 **Performance & Scalability**
-
-### **Response Times & Optimization**
-- ⚡ **API Response**: < 200ms average with async FastAPI
-- 🤖 **AI Generation**: < 2s with timeout protection and fallback responses
-- 💾 **Database Queries**: Optimized with proper indexing and connection pooling
-- 🔄 **Real-time Updates**: Instant UI updates with optimistic rendering
-
-### **Concurrent User Handling**
-```python
-# Async processing with timeout protection
-try:
-    result = await asyncio.wait_for(
-        benny.chat(request.message), timeout=30.0)
-    return ChatResponse(success=result["success"], response=result["response"])
-except asyncio.TimeoutError:
-    return ChatResponse(
-        success=False,
-        response="Benny is thinking extra hard, could you ask me again?",
-        error="timeout"
-    )
-```
-
 ### **Error Handling & Resilience**
 - 🛡️ **Graceful Degradation**: Fallback responses when AI service is unavailable
 - 🔄 **Retry Logic**: Automatic retry for failed requests
@@ -313,41 +287,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
 ```
-
----
-
-## 🎨 **UI/UX Design**
-
-### **Design System**
-- 🎨 **Modern Interface**: Clean, accessible design with Tailwind CSS
-- 📱 **Responsive Layout**: Mobile-first approach
-- ♿ **Accessibility**: WCAG 2.1 compliant
-- 🌙 **Dark Mode**: User preference support
-
-![UI Showcase](./assets/ui-showcase.gif)
-
----
-
-## 📊 **Project Metrics & Impact**
-
-| Metric | Value | Technology |
-|--------|-------|------------|
-| **Lines of Code** | 3,500+ | React, Python, SQL |
-| **API Endpoints** | 12+ | FastAPI REST API |
-| **Components** | 15+ | React Components |
-| **Test Coverage** | 85%+ | unittest, pytest |
-| **Response Time** | <200ms | Async FastAPI |
-| **AI Integration** | Azure OpenAI | GPT-3.5/4 Models |
-| **Authentication** | OAuth 2.0 | Google, Apple, Facebook |
-| **Database** | Multi-DB | SQLite, PostgreSQL |
-| **Deployment** | Cloud-Native | Azure + CI/CD |
-
-### **Technical Achievements**
-- 🏗️ **Microservices Architecture**: Separated concerns with independent AI service
-- 🎨 **Modern UX/UI**: Responsive design with drag-and-drop interactions  
-- 🔄 **Real-time Processing**: WebSocket-ready infrastructure for live updates
-- 📱 **Cross-Platform**: Progressive Web App (PWA) capabilities
-- 🔐 **Security-First**: CORS, session management, and input validation
 
 ---
 
