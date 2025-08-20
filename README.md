@@ -2,14 +2,14 @@
 
 > A comprehensive full-stack wellness application leveraging Azure OpenAI to deliver personalized health coaching through intelligent conversations, daily assessments, and goal prioritization.
 
-[(./assets/Screen%20Recording%202025-08-19%20at%207.33.48 PM.mov)]
-Chat
-[(./assets/daily-checkin.png)]
-Daily Check-in
-[(./assets/priorities.png)]
-Wellness Priority Ranking
-[(./assets/history.png)]
-Chat History
+![Chat Interface](./assets/giphy.mp4)
+*Real-time conversations with Benny AI*
+![Daily Check-in](./assets/daily-checkin.png)
+*Daily check-in form with AI daily recommendation response*
+![Goal Prioritization](./assets/priorities.png)
+*Drag-and-drop interface for ranking wellness goals*
+![Chat History](./assets/history.png)
+*Chat History pulled from database*
 
 ---
 
