@@ -1,341 +1,43 @@
 # 🤖 Benny - AI-Powered Wellness Coach
 
-> A comprehensive full-stack wellness application leveraging Azure OpenAI to deliver personalized health coaching through intelligent conversations, daily assessments, and goal prioritization.
+A full-stack healthcare application providing personalized wellness coaching through AI-driven conversations, habit tracking, and goal prioritization. Built with React, FastAPI, and Azure OpenAI.
 
-![Chat Interface](./assets/chat.png)
-*Real-time conversations with Benny AI*
-![Daily Check-in](./assets/daily-checkin.png)
-*Daily check-in form with AI daily recommendation response*
-![Goal Prioritization](./assets/priorities.png)
-*Drag-and-drop interface for ranking wellness goals*
-![Chat History](./assets/history.png)
-*Chat History pulled from database*
+## **Live Demo**
+- **Frontend**: [https://benny-wellness.vercel.app](your-url)
+- **Backend API**: [https://api.benny-wellness.com](your-api-url)
+- **Demo Credentials**: demo@benny.com / demo123
 
----
+*[Add 2-3 screenshots or a GIF showing the main features]*
 
-## 🎯 **Project Impact**
+## 🎯 **Key Features**
+- **AI Wellness Coaching**: Personalized health guidance using Azure OpenAI
+- **Daily Check-ins**: Structured health assessments with AI recommendations  
+- **Goal Prioritization**: Drag-and-drop interface for wellness objectives
+- **Real-time Chat**: Conversational AI with memory and context awareness
+- **Progress Tracking**: Visual dashboards and historical data analysis
 
-Benny revolutionizes wellness coaching by combining **evidence-based health research** with **conversational AI** and **intelligent goal prioritization**, creating a comprehensive ecosystem that adapts to user needs and promotes sustainable health habits.
+## 🛠 **Tech Stack**
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Backend**: FastAPI, PostgreSQL, SQLAlchemy
+- **AI**: Azure OpenAI API with custom prompt engineering
+- **Auth**: OAuth 2.0 (Google, Apple, Facebook)
+- **Deployment**: Vercel (frontend), Railway (backend)
 
-### **Key Achievements**
-- 🚀 **Full-Stack Architecture**: React frontend with FastAPI microservices backend
-- 🧠 **Advanced AI Integration**: Azure OpenAI with custom prompt engineering for personalized coaching
-- 🎯 **Goal Prioritization System**: Drag-and-drop interface for ranking wellness objectives
-- 💾 **Robust Data Management**: SQLite/PostgreSQL with optimized chat history and progress tracking
-- 🔐 **Enterprise Security**: OAuth 2.0 authentication with Google/Apple/Facebook integration
-- ☁️ **Cloud-Native**: Azure deployment with automated CI/CD pipeline
-- 📱 **Modern UX**: Responsive design with real-time chat and progress visualization
+## 🏥 **Healthcare Focus**
+- Evidence-based wellness recommendations
+- Secure health data storage with encryption
+- HIPAA-compliant architecture design
+- Integration with health tracking APIs
 
----
+## 🚀 **Quick Start**
+```bash
+# Clone and setup
+git clone https://github.com/yourusername/benny-ai-wellness
+cd benny-ai-wellness
 
-## 🛠 **Technology Stack**
+# Backend
+cd backend && pip install -r requirements.txt
+uvicorn main:app --reload
 
-<table>
-<tr>
-<td><strong>Frontend</strong></td>
-<td>
-  <img src="https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white" />
-</td>
-</tr>
-<tr>
-<td><strong>Backend</strong></td>
-<td>
-  <img src="https://img.shields.io/badge/FastAPI-005571?style=flat&logo=fastapi" />
-  <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=python&logoColor=white" />
-</td>
-</tr>
-<tr>
-<td><strong>AI/ML</strong></td>
-<td>
-  <img src="https://img.shields.io/badge/Azure%20OpenAI-412991?style=flat&logo=microsoft-azure" />
-  <img src="https://img.shields.io/badge/GPT--4-74aa9c?style=flat&logo=openai&logoColor=white" />
-</td>
-</tr>
-<tr>
-<td><strong>Database</strong></td>
-<td>
-  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=flat&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/SQLite-07405E?style=flat&logo=sqlite&logoColor=white" />
-</td>
-</tr>
-<tr>
-<td><strong>Infrastructure</strong></td>
-<td>
-  <img src="https://img.shields.io/badge/Microsoft_Azure-0089D0?style=flat&logo=microsoft-azure&logoColor=white" />
-  <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=flat&logo=github-actions&logoColor=white" />
-</td>
-</tr>
-</table>
-
----
-
-## 🏗 **System Architecture**
-
-```mermaid
-graph TB
-    A[React Frontend<br/>• Chat Interface<br/>• Goal Prioritization<br/>• Daily Check-ins] --> B[FastAPI Gateway<br/>Port 8000]
-    B --> C[Benny AI Service<br/>Port 8001]
-    B --> D[Auth Service<br/>OAuth 2.0]
-    B --> E[Database Layer]
-    
-    C --> F[Azure OpenAI<br/>GPT-3.5/4]
-    D --> G[OAuth Providers<br/>Google • Apple • Facebook]
-    E --> H[(SQLite/PostgreSQL<br/>Chat History • User Data)]
-    
-    I[Azure Cloud Platform] --> J[CI/CD Pipeline<br/>GitHub Actions]
-    J --> K[Production Deployment]
-```
-
-**Microservices Architecture:**
-- **Frontend (React)**: SPA with routing, state management, and real-time updates
-- **API Gateway (FastAPI)**: Request routing, authentication, and database operations  
-- **AI Service**: Isolated service handling OpenAI interactions and prompt engineering
-- **Database Layer**: Flexible data persistence with chat history and user progress tracking
-
----
-
-## 💡 **Core Features**
-
-### 🗣️ **Intelligent Conversations**
-Context-aware AI chat with conversation memory and evidence-based wellness guidance.
-
-```javascript
-// React chat interface with real-time updates
-const handleSubmit = async (userInput) => {
-  const userMessage = { type: 'user', text: userInput };
-  setMessages(prev => [...prev, userMessage]);
-
-  try {
-    const res = await axios.post(`${API_URL}/chat`, { message: userInput });
-    const aiMessage = { type: 'ai', text: res.data.response };
-    setMessages(prev => [...prev, aiMessage]);
-  } catch (error) {
-    console.error("Failed to send message:", error);
-  }
-};
-```
-
-```python
-# Backend AI service with custom prompt engineering
-class BennyWellnessAI:
-    BASE_PERSONALITY = """You are Benny, a warm and motivational wellness coach 
-    who uses evidence-based research with psychology to provide education, 
-    motivation and encouragement."""
-
-    async def chat(self, message: str) -> Dict:
-        """Context-aware chat with conversation memory"""
-        response = await self._generate_response(message, BennyMode.CHAT)
-        await self._save_chat_to_db(message, response["response"])
-        return response
-```
-
-
-### 🎯 **Goal Prioritization System**
-Advanced drag-and-drop interface for ranking wellness objectives with visual feedback.
-
-```javascript
-// Drag-and-drop goal prioritization using @dnd-kit
-const handleDragEnd = ({ active, over }) => {
-  if (activeContainer !== overContainer) {
-    // Moving between lists
-    if (items['top-goals'].length >= 5 && overContainer === 'top-goals') {
-      return; // Prevent adding more than 5 goals
-    }
-    setItems(prev => ({
-      ...prev,
-      [activeContainer]: prev[activeContainer].filter(item => item.id !== active.id),
-      [overContainer]: [...prev[overContainer], activeItems[activeIndex]]
-    }));
-  }
-};
-```
-
-
-### 📊 **Daily Wellness Assessments**
-Structured health tracking with AI-powered personalized recommendations.
-
-```python
-# Daily check-in data model and processing
-class DailyCheckInData(BaseModel):
-    nutrition: str
-    sleep: str  
-    fitness: str
-    stress: str
-
-@app.post("/api/checkin/submit")
-async def submit_checkin(submission: CheckInSubmission):
-    """Submit daily check-in and get AI recommendation"""
-    # Save to database
-    db.run_query("""INSERT INTO daily_log_table 
-                    (log_date, nutrition, sleep_quality, stress_level, activity_complete)
-                    VALUES (?, ?, ?, ?, ?)""", 
-                 today, checkin_data.get("nutrition"), checkin_data.get("sleep"))
-    
-    # Get AI recommendation
-    async with httpx.AsyncClient() as client:
-        ai_response = await client.post(f"{ai_service_url}/recommend",
-                                      json={"daily_checkin": checkin_data})
-    return {"success": True, "recommendation": ai_data.get("response")}
-```
-
-```javascript
-// Frontend check-in flow with progressive questions
-const handleButtonClick = async (buttonText) => {
-  const newResponse = {
-    category: currentQuestion.category,
-    question: currentQuestion.text,
-    response: buttonText
-  };
-  
-  if (nextStep < checkinQuestions.length) {
-    setTimeout(() => {
-      setMessages(prevMessages => [...prevMessages, checkinQuestions[nextStep]]);
-      setCurrentStep(nextStep);
-    }, 1000);
-  }
-};
-```
-
-
-### 🔒 **Enterprise-Grade Security**
-Comprehensive OAuth 2.0 authentication with multiple provider support and session management.
-
-```python
-# Multi-provider OAuth implementation
-from routers import auth, users
-
-# Session middleware for secure user state
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-# CORS configuration for secure cross-origin requests
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"]
-)
-```
-
-```javascript
-// Protected routes with session context
-const ProtectedLayout = () => {
-  const { session, loading } = useSession();
-  
-  if (loading) return <div>Loading...</div>;
-  if (!session) return <Navigate to="/auth" replace />;
-  
-  return (
-    <div className="min-h-screen">
-      <Header />
-      <main className="container mx-auto px-4 py-8">
-        <Outlet />
-      </main>
-    </div>
-  );
-};
-```
-
-### 📱 **Modern User Experience**
-Responsive design with intuitive navigation and real-time interactions.
-
-```javascript
-// Real-time typing effect for engaging user experience
-const animatedGreeting = useTypingEffect(initialMessageText, 20);
-
-// Dynamic routing with protected routes
-<Route element={<ProtectedLayout />}>
-  <Route path="/" element={<Chat />} />
-  <Route path="/dashboard" element={<Dashboard />} />
-  <Route path="/chat-history" element={<ChatHistory />} />
-  <Route path="/daily-checkin" element={<DailyCheckin />} />
-  <Route path="/priorities" element={<WellnessPriorities />} />
-</Route>
-```
-```
-
----
-
-### **Error Handling & Resilience**
-- 🛡️ **Graceful Degradation**: Fallback responses when AI service is unavailable
-- 🔄 **Retry Logic**: Automatic retry for failed requests
-- 📊 **Comprehensive Logging**: Detailed error tracking and performance monitoring
-
----
-
-## 🚀 **Deployment & DevOps**
-
-### **CI/CD Pipeline**
-- ✅ **Automated Testing**: Unit tests, integration tests
-- 🔄 **Continuous Deployment**: GitHub Actions → Azure
-- 📊 **Monitoring**: Application insights and logging
-- 🛡️ **Security Scans**: Dependency and vulnerability checks
-
-### **Infrastructure as Code**
-```yaml
-# GitHub Actions deployment pipeline
-name: Deploy to Azure
-on:
-  push:
-    branches: [main]
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-```
-
----
-
-## 🧪 **Testing & Quality Assurance**
-
-### **Comprehensive Testing Strategy**
-```python
-# AI service unit tests
-class TestBennyAI(unittest.TestCase):
-    async def test_chat_functionality(self):
-        """Test AI chat responses and conversation memory"""
-        response = await self.benny.chat("How can I improve my sleep?")
-        self.assertTrue(response["success"])
-        self.assertIn("sleep", response["response"].lower())
-    
-    async def test_recommendation_engine(self):
-        """Test personalized wellness recommendations"""
-        checkin_data = {"nutrition": "good", "sleep": "poor", "fitness": "excellent", "stress": "high"}
-        response = await self.benny.recommend(checkin_data)
-        self.assertTrue(response["success"])
-        self.assertIsNotNone(response["response"])
-
-# Database integration tests  
-class TestDatabase(unittest.TestCase):
-    def test_chat_history_storage(self):
-        """Test chat message persistence and retrieval"""
-        test_date = "01/01/2024"
-        self.db.insert_row_chat_history_main(test_date)
-        result = self.db.fetch_main_chat_history_pk(test_date)
-        self.assertIsNotNone(result)
-```
-
-### **Automated Testing Pipeline**
-- ✅ **Unit Tests**: AI service functionality and database operations
-- 🔄 **Integration Tests**: API endpoint testing with real database
-- 🚀 **GitHub Actions**: Automated testing on every push and pull request
-- 📊 **Test Coverage**: 85%+ code coverage across backend services
-
-```yaml
-# GitHub Actions CI/CD Pipeline
-name: Test and Deploy
-on: [push, pull_request]
-jobs:
-  test-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Run Backend Tests
-        run: |
-          python -m unittest test_benny.py
-          pytest -v test_bennyDB.py
-```
+# Frontend  
+cd frontend && npm install && npm run dev
