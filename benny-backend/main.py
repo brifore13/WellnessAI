@@ -14,14 +14,12 @@ from starlette.middleware.sessions import SessionMiddleware
 # Local imports
 from app.core.config import settings
 from app.core.database import get_database
-from app.core.ogging import setup_logging
+from app.core.logging import setup_logging
 from app.api.routes import checkin, chat, health
 from app.services.dependencies import get_checkin_service, get_chat_service
 
 # Setup logging
 logger = logging.getLogger(__name__)
-
-
 
 app = FastAPI()
 
