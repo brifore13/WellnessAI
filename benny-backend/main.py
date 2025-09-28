@@ -1,26 +1,26 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware 
-from pydantic import BaseModel
-from typing import List, Optional
-import uvicorn
+# Imports & Dependencies
+# Standard library imports
 import datetime
-import sys
-import os
+import logging
 from pathlib import Path
+from typing import List, Optional
 
-from config import SECRET_KEY
-from routers import auth, users
-import httpx
+# Third-party imports
+import uvicorn
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
-# add bennyDB directory to Python path
-bennydb_path = Path(__file__).parent.parent/"bennyDB"
-sys.path.append(str(bennydb_path))
+# Local imports
+from app.core.config import settings
+from app.core.database import get_database
+from app.core.ogging import setup_logging
+from app.api.routes import checkin, chat, health
+from app.services.dependencies import get_checkin_service, get_chat_service
 
-# Import database
-import db_connector_real
-db = db_connector_real.wellness_ai_db()
-print("Database connected successfully!")
+# Setup logging
+logger = logging.getLogger(__name__)
+
 
 
 app = FastAPI()
