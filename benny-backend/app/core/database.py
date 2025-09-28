@@ -22,7 +22,7 @@ class DatabaseManager:
             await self.engine.dispose()
             logger.info("Database connection pool closed")
 
-async def get_database()  AsyncSession:
+async def get_database() -> AsyncSession:
     """Fast API dependency for database sessions"""
     async with AsyncSession(database_manager.engine) as session:
         try:
