@@ -2,6 +2,7 @@
 # Standard library imports
 import datetime
 import logging
+import contextlib import asynccontextmanager
 from pathlib import Path
 from typing import List, Optional
 
@@ -13,64 +14,48 @@ from starlette.middleware.sessions import SessionMiddleware
 
 # Local imports
 from app.core.config import settings
-from app.core.database import get_database
+from app.core.database import startup_database, shutdown_database
 from app.core.logging import setup_logging
-from app.api.routes import checkin, chat, health
-from app.services.dependencies import get_checkin_service, get_chat_service
+from routers import auth, users
 
 # Setup logging
 logger = logging.getLogger(__name__)
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Manage app startup and shutdown."""
+    logger.info("Starting application...")
+    await startup_database()
+    yield
+    logger.info("Shutting down...")
+    await shutdown_database()
 
-# Get CORS origins from environment variable
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-allowed_origins = [
-    frontend_url,
-    "http://localhost:5173",  # Vite dev
-    "http://localhost:3000",  # Create React App dev
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000"
-]
 
+app = FastAPI(
+    title=settings.app_name,
+    debug=settings.debug,
+    lifespan=lifespan
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],
-    allow_headers=["*"],
+    allow_origins=settings.allowed_origins,
+    allow_credentials=settings.cors_allow_credentials,
+    allow_methods=settings.cors_allow_methods,
+    allow_headers=settings.cors_allow_headers,
 )
+app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
+
 app.include_router(auth.router)
 app.include_router(users.router)
 
-# Add OUATH middleware
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
-
-# Pydantic models for request/response
-class CheckInResponse(BaseModel):
-    category: str
-    question: str
-    response: str
-
-class CheckInSubmission(BaseModel):
-    responses: List[CheckInResponse]
-
 @app.get("/")
 async def root():
-    """API info endpoint"""
-    return {
-        "service": "Benny Daily Check-in Backend",
-        "database_connected": True,
-    }
+    return {"service": settings.app_name, "status": "running"}
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy", 
-        "database_connected": True,
-    }
+    return { "status": "healthy" }
 
 @app.post("/api/checkin/submit")
 async def submit_checkin(submission: CheckInSubmission):
@@ -189,6 +174,4 @@ async def get_recent_chat_messages():
            
 
 if __name__ == "__main__":
-    print("Starting Benny Daily Check-in Backend (Testing Mode)...")
-    print("Database connection: DISABLED")
-    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.debug)
