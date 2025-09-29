@@ -23,6 +23,26 @@ class Settings(BaseSettings):
     # CORS
     frontend_url: str = "http://localhost:5173"
     allowed_origins: List[str] = []
+    cors_allow_credentials: bool = True
+    cors_allow_methods: List[str] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    cors_allow_headers: List[str] = [
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "Origin",
+        "User-Agent",
+        "X-Requested-With",
+        "X-CSFR-Token"
+    ]
+    cors_max_age: int = 86400   #24 hours
+    allowed_origins: List[str] = Field(
+        default_factory=lambda: [
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:3000"
+        ]
+    )
 
     # External Services
     ai_service_url: str = "http://127.0.0.1:8001"
@@ -33,17 +53,12 @@ class Settings(BaseSettings):
     host: str = "127.0.0.1"
     port: int = 8000
 
-    @validator('allowed_origines', pre=True)
-    def parse_cors_origines(cls, v):
+    @validator('allowed_origins', pre=True)
+    def parse_cors_origins(cls, v):
         """Parse CORS origins from environment variable."""
         if isinstance(v, str):
-            return [origin.strip() for origin in v.split(',')]
-        return v or [
-            "http://localhost:5173",
-            "http://localhost:3000",
-            "http://127.0.0.1:5173",
-            "http://127.0.0.1:3000"
-        ]
+            return [origin.strip() for origin in v.split(',') if origin.strip()]
+        return v
 
     @validator('database_url')
     def validate_database_url(cls, v):
