@@ -63,7 +63,7 @@ class DailyCheckin(Base):
     user_id = Column(String(255), nullable=False, index=True)
 
     # Timestamp
-    log_date = Column(DateTime, nullable=False, default=datetime.now(), index=True)
+    log_date = Column(DateTime, nullable=False, default=datetime.now(timezone.utc), index=True)
 
     # Check-in repsonses
     nutrition = Column(Enum(NutritionRating), nullable=False)
@@ -75,8 +75,8 @@ class DailyCheckin(Base):
     ai_recommendation = Column(Text, nullable=True)
 
     # Metadata
-    created_at = Column(DateTime, nullable=False, default=datetime.now())
-    updated_at = Column(DateTime, nullable=False, default=datetime.now())
+    created_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(DateTime, nullable=False, default=datetime.now(timezone.utc))
 
     def __repr__(self):
         return f"<DailyCheckin(id={self.id}, user_id={self.user_id}, date={self.log_date})>"

@@ -2,7 +2,7 @@
 Repository for daily check-in data access.
 Handles button-based check-in responses.
 """
-from datetime import datetime, date, timedelta
+from datetime import datetime, date, timedelta, timezone
 from typing import List, Optional
 from sqlalchemy import select, and_, func
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -17,7 +17,7 @@ from app.models.checkin import (
 from app.repositories.base import BaseRepository
 
 
-class checkinRepository(BaseRepository[DailyCheckin]):
+class CheckinRepository(BaseRepository[DailyCheckin]):
     """Repository for daily check-in operations."""
 
     def __init__(self, db: AsyncSession):
@@ -35,7 +35,7 @@ class checkinRepository(BaseRepository[DailyCheckin]):
         """Create a new daily check-in with button responses."""
         return await self.create(
             user_id=user_id,
-            log_date=datetime.now(),
+            log_date=datetime.now(timezone.utc),
             nutrition=nutrition,
             sleep_quality=sleep_quality,
             fitness=fitness,
@@ -45,7 +45,7 @@ class checkinRepository(BaseRepository[DailyCheckin]):
 
     async def get_user_checkins(
         self,
-        user_id,
+        user_id: str,
         skip: int = 0,
         limit: int = 30
     ) -> List[DailyCheckin]:
@@ -57,7 +57,7 @@ class checkinRepository(BaseRepository[DailyCheckin]):
             .offset(skip)
             .limit(limit)
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get_latest_checkin(self, user_id: str) -> Optional[DailyCheckin]:
         """Get the most recent check-in for user"""
@@ -103,7 +103,7 @@ class checkinRepository(BaseRepository[DailyCheckin]):
         """Calculate user's consecutive check-in streak"""
         # Get all check=ins ordered by date
         result = await self.db.execute(
-            select(DailyCheckin)
+            select(func.date(DailyCheckin.log_date))
             .where(DailyCheckin.user_id == user_id)
             .distinct()
             .order_by(func.date(DailyCheckin.log_date).desc())
