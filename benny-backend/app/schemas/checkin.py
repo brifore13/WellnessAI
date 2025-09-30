@@ -9,7 +9,7 @@ from enum import Enum
 
 
 # Request schemas
-class NutritionRating(str, enum.Enum):
+class NutritionRating(str, Enum):
     """Nutrtion rating options."""
     EXCELLENT = "Excellent"
     GOOD = "Good"
@@ -17,7 +17,7 @@ class NutritionRating(str, enum.Enum):
     POOR = "Poor"
 
 
-class SleepRating(str, enum.Enum):
+class SleepRating(str, Enum):
     """Sleep rating options."""
     VERY_GOOD = "Very good"
     GOOD = "Good"
@@ -25,7 +25,7 @@ class SleepRating(str, enum.Enum):
     POOR = "Poor"
 
 
-class FitnessCompletion(str, enum.Enum):
+class FitnessCompletion(str, Enum):
     """Fitness activity completion status."""
     COMPLETED = "Yes, completed"
     PARTIALLY = "Partially completed"
