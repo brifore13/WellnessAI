@@ -12,8 +12,6 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker
 )
 from sqlalchemy.orm import declarative_base
-from sqlalchemy.pool import StaticPool
-from sqlalchemy import environment
 
 from app.core.config import settings
 

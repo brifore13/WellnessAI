@@ -2,7 +2,7 @@
 Database models for daily check-ins.
 SQLAlchemy models for PostgreSQL
 """
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Text, Enum
 from sqlalchemy.orm import relationship
 import enum

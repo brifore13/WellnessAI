@@ -1,62 +1,72 @@
-# Imports & Dependencies
-# Standard library imports
-import datetime
+"""
+Benny Wellness AI Backend - Main Application Entry Point
+"""
 import logging
-import contextlib import asynccontextmanager
-from pathlib import Path
-from typing import List, Optional
+from contextlib import asynccontextmanager
 
-# Third-party imports
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 
-# Local imports
 from app.core.config import settings
 from app.core.database import startup_database, shutdown_database
 from app.core.logging import setup_logging
-from routers import auth, users
+
+# Import routers
+from app.api.routes import health, checkin
+from routers import auth, users  # Existing auth routers
 
 # Setup logging
+setup_logging(debug=settings.debug)
 logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Manage app startup and shutdown."""
-    logger.info("Starting application...")
+    """Manage application startup and shutdown."""
+    logger.info("Starting Benny Wellness AI Backend...")
     await startup_database()
+    logger.info("Application started successfully")
+    
     yield
-    logger.info("Shutting down...")
+    
+    logger.info("Shutting down application...")
     await shutdown_database()
+    logger.info("Application shut down complete")
 
 
+# Create FastAPI application
 app = FastAPI(
     title=settings.app_name,
     debug=settings.debug,
     lifespan=lifespan
 )
 
+# CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins,
     allow_credentials=settings.cors_allow_credentials,
-    allow_methods=settings.cors_allow_methods,
-    allow_headers=settings.cors_allow_headers,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type", "Accept"],
 )
+
+# Session middleware
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
-app.include_router(auth.router)
-app.include_router(users.router)
-
-@app.get("/")
-async def root():
-    return {"service": settings.app_name, "status": "running"}
-
-@app.get("/health")
-async def health_check():
-    return { "status": "healthy" }
+# Include routers
+app.include_router(health.router)  # New: Health checks
+app.include_router(checkin.router)  # New: Check-in endpoints
+app.include_router(auth.router)  # Existing: Authentication
+app.include_router(users.router)  # Existing: User management
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host=settings.host, port=settings.port, reload=settings.debug)
+    logger.info(f"Starting {settings.app_name}...")
+    uvicorn.run(
+        "main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=settings.debug
+    )
