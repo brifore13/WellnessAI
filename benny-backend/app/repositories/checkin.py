@@ -35,7 +35,7 @@ class CheckinRepository(BaseRepository[DailyCheckin]):
         """Create a new daily check-in with button responses."""
         return await self.create(
             user_id=user_id,
-            log_date=datetime.now(timezone.utc),
+            log_date=datetime.now(),
             nutrition=nutrition,
             sleep_quality=sleep_quality,
             fitness=fitness,

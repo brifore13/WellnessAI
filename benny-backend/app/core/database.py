@@ -69,7 +69,7 @@ class DatabaseManager:
                 await session.rollback()
                 raise
             finally:
-                await session.close
+                await session.close()
 
 
 # Global database manager instance
