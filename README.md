@@ -7,9 +7,30 @@ A full-stack healthcare application providing personalized wellness coaching thr
 - **Backend API**: [https://api.benny-wellness.com](your-api-url)
 - **Demo Credentials**: demo@benny.com / demo123
 
-*[Add 2-3 screenshots or a GIF showing the main features]*
 
-## 🎯 **Key Features**
+## Backend
+
+**Location**: `benny-backend/`
+
+**Tech Stack**: FastAPI, PostgreSQL, SQLAlchemy (async), Alembic
+
+### Features
+- RESTful API with async operations
+- PostgreSQL database with migrations
+- Clean architecture (Repository + Service patterns)
+- Type-safe validation with Pydantic v2
+- Enum-based check-in responses for data consistency
+- AI recommendation integration (optional, non-blocking)
+
+### Quick Start
+```bash
+cd benny-backend
+pip install -r requirements.txt
+cp .env.example .env
+alembic upgrade head
+python main.py
+
+## **Key Features**
 - **AI Wellness Coaching**: Personalized health guidance using Azure OpenAI
 - **Daily Check-ins**: Structured health assessments with AI recommendations  
 - **Goal Prioritization**: Drag-and-drop interface for wellness objectives
@@ -23,21 +44,5 @@ A full-stack healthcare application providing personalized wellness coaching thr
 - **Auth**: OAuth 2.0 (Google, Apple, Facebook)
 - **Deployment**: Vercel (frontend), Railway (backend)
 
-## 🏥 **Healthcare Focus**
-- Evidence-based wellness recommendations
-- Secure health data storage with encryption
-- HIPAA-compliant architecture design
-- Integration with health tracking APIs
 
-## 🚀 **Quick Start**
-```bash
-# Clone and setup
-git clone https://github.com/yourusername/benny-ai-wellness
-cd benny-ai-wellness
 
-# Backend
-cd backend && pip install -r requirements.txt
-uvicorn main:app --reload
-
-# Frontend  
-cd frontend && npm install && npm run dev
