@@ -4,6 +4,8 @@
 .env.*.local
 .env.development
 .env.production
+benny-backend/.env
+benny-ai-service/.env
 
 # Python
 __pycache__/
@@ -32,3 +34,4 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+benny-ai-service/.env
