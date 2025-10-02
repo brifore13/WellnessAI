@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     azure_openai_endpoint: str
     azure_openai_api_key: str
     azure_openai_deployment: str = "gpt-35-turbo"
-    azure_openai_api_version: str = "2025-preview"
+    azure_openai_api_version: str = "2025-01-01-preview"
 
     # CORS
     frontend_url: str = "http://localhost:5173"
