@@ -21,6 +21,34 @@ class AIService:
         self.base_url = settings.ai_service_url
         self.timeout = 30.0
 
+    async def chat(self, message: str) -> Optional[Dict]:
+        """Send chat message to AI service.
+        Args:
+            message: User's chat message
+        Returns:
+            AI response dict or None if failed
+        """
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    f"{self.base_url}/chat",
+                    json={"message": message},
+                    timeout=self.timeout
+                )
+
+                response.raise_for_status()
+                data = response.json()
+
+                if data.get("success"):
+                    return data
+                else:
+                    logger.warning("AI chat returned success=false")
+                    return None
+                
+        except Exception as e:
+            logger.error(f"AI chat error: {e}")
+            return None
+
     async def get_recommendation(
             self,
             nutrition: str,
