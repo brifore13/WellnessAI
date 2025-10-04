@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
-from routers.auth import SECRET_KEY
+from app.core.config import settings
+SECRET_KEY = settings.secret_key
 
 router = APIRouter(prefix='/api/v1/users')
 security = HTTPBearer()

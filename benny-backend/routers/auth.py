@@ -1,20 +1,13 @@
 from fastapi import APIRouter, Request
 from starlette.responses import HTMLResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuth
-from config import SECRET_KEY
 import jwt  # pip install pyjwt
-from config import SECRET_KEY, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from app.core.config import settings
 
+
+SECRET_KEY = settings.secret_key
 oauth = OAuth()
 
-# Google
-oauth.register(
-    name='google',
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_id=GOOGLE_CLIENT_ID,
-    client_secret=GOOGLE_CLIENT_SECRET,
-    client_kwargs={'scope': 'openid email profile'}
-)
 
 # Apple
 oauth.register(
