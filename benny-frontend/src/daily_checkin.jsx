@@ -11,8 +11,8 @@ const DailyCheckin = () => {
     const [currentStep, setCurrentStep] = useState(0);
     const [isCompleted, setIsCompleted] = useState(false);
     const [responses, setResponses] = useState([]);
-    const [backendConnected, setBackendConnected] = useState(false);
     const [bennyRecommendation, setBennyRecommendation] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         testBackendConnection();
@@ -49,14 +49,16 @@ const DailyCheckin = () => {
     };
 
     const handleButtonClick = async (buttonText) => {
-        if (isCompleted) return;
+        if (isCompleted || isSubmitting) return;
+
+        setIsSubmitting(true);
 
         const currentQuestion = checkinQuestions[currentStep];
         const newResponse = {
             category: currentQuestion.category,
-            question: currentQuestion.text,
             response: buttonText
         };
+
 
         const updatedResponses = [...responses, newResponse];
         setResponses(updatedResponses);
@@ -78,7 +80,10 @@ const DailyCheckin = () => {
                 if (!nextAiMessage.buttons || nextAiMessage.buttons.length === 0) {
                     setIsCompleted(true);
                 }
+                setIsSubmitting(false);
             }, 1000);
+        } else {
+            setIsSubmitting(false);
         }
     };
 
