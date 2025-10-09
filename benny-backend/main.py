@@ -14,8 +14,8 @@ from app.core.database import startup_database, shutdown_database
 from app.core.logging import setup_logging
 
 # Import routers
-from app.api.routes import health, checkin
-from routers import auth, users  # Existing auth routers
+from app.api.routes import health, checkin, auth, chat
+from routers import auth, users
 
 # Setup logging
 setup_logging(debug=settings.debug)
@@ -56,10 +56,10 @@ app.add_middleware(
 app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 
 # Include routers
-app.include_router(health.router)  # New: Health checks
-app.include_router(checkin.router)  # New: Check-in endpoints
-app.include_router(auth.router)  # Existing: Authentication
-app.include_router(users.router)  # Existing: User management
+app.include_router(health.router)
+app.include_router(checkin.router)
+app.include_router(auth.router)
+app.include_router(users.router)
 
 
 if __name__ == "__main__":

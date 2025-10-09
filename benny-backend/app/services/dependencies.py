@@ -8,6 +8,7 @@ from app.core.database import get_database
 from app.repositories.checkin import CheckinRepository
 from app.services.checkin import CheckinService
 from app.services.ai import AIService
+from app.services.dependencies import get_current_user 
 
 
 def get_checkin_repository(
