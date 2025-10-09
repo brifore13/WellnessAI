@@ -2,8 +2,7 @@
 Business logic for daily check-in operations
 """
 import logging
-from typing import Optional, List
-from datetime import date
+from typing import List
 
 from app.repositories.checkin import CheckinRepository
 from app.services.ai import AIService
