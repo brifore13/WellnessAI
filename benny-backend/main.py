@@ -58,6 +58,7 @@ app.add_middleware(SessionMiddleware, secret_key=settings.secret_key)
 # Include routers
 app.include_router(health.router)
 app.include_router(checkin.router)
+app.include_router(chat.router)
 app.include_router(auth.router)
 app.include_router(users.router)
 

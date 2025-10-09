@@ -10,6 +10,7 @@ from alembic import context
 from app.core.database import Base
 from app.models.checkin import DailyCheckin
 from app.core.config import settings
+from app.models.chat import ChatSession, ChatMessage
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
