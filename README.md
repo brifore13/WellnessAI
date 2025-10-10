@@ -7,6 +7,35 @@ A full-stack healthcare application providing personalized wellness coaching thr
 - **Backend API**: [https://api.benny-wellness.com](your-api-url)
 - **Demo Credentials**: demo@benny.com / demo123
 
+## AI Service
+
+**Location**: `benny-ai-service/`
+
+**Tech Stack**: FastAPI, Azure OpenAI, Pydantic
+
+### Features
+- Conversational wellness coaching with context awareness
+- Personalized daily recommendations from check-in data
+- Stateless microservice (no database)
+- Async operations with fallback responses
+
+Service URL: http://localhost:8001
+API Documentation: http://localhost:8001/docs
+## Integration
+Backend calls AI service for recommendations:
+# After user submits check-in
+recommendation = await ai_service.get_recommendation(checkin_data)
+
+AI service is stateless - backend manages all data persistence.
+See benny-ai-service/README.md for detailed API reference.
+
+### Quick Start
+- bash
+cd benny-ai-service
+pip install -r requirements.txt
+cp .env.example .env
+# Add Azure OpenAI credentials to .env
+python -m src.api.main
 
 ## Backend
 
@@ -23,7 +52,7 @@ A full-stack healthcare application providing personalized wellness coaching thr
 - AI recommendation integration (optional, non-blocking)
 
 ### Quick Start
-```bash
+- bash
 cd benny-backend
 pip install -r requirements.txt
 cp .env.example .env

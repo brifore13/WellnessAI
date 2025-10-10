@@ -1,70 +1,34 @@
-"""API Server for Benny Wellness AI Endpoints"""
-
-import sys
-import os
-from pathlib import Path
+"""
+Benny AI Service API
+Microservice for AI-powered wellness recommendations and chat.
+"""
+import logging
 from contextlib import asynccontextmanager
-from typing import Dict, Optional
+from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import uvicorn
-import asyncio
 
-sys.path.append(str(Path(__file__).parent.parent))
-from core.benny import BennyWellnessAI
+from src.core.benny import BennyWellnessAI
+from src.core.config import settings
 
-# initialize benny
-benny = None
-
-# Start Benny
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    """Initialize Benny when API starts"""
-    global benny
-    benny = BennyWellnessAI()
-    print("Benny API ready!")
-    yield
-
-app = FastAPI(title="Benny Wellness AI", version="1.0.1", lifespan=lifespan)
-
-# Get CORS origins from environment variables
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
-backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
-
-allowed_origins = [
-    frontend_url,
-    backend_url,
-    "http://localhost:3000",
-    "http://127.0.0.1:3000", # frontend dev
-    "http://127.0.0.1:8000", # backend dev
-    "http://localhost:8000",
-    "http://127.0.0.1:5173", # vite dev
-    "http://localhost:5173"
-]
-
-
-# Add CORS for React
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["*"]
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
+logger = logging.getLogger(__name__)
+
+# Global Benny instance
+benny: Optional[BennyWellnessAI] = None
 
 
-# REQUEST / RESPONSE MODEL
+# Pydantic Schemas
 class ChatRequest(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=1000)
 
-
-class ChatResponse(BaseModel):
-    success: bool
-    response: str
-    tokens_used: int
-    error: Optional[str] = None
 
 class DailyCheckInData(BaseModel):
     nutrition: str
@@ -72,16 +36,85 @@ class DailyCheckInData(BaseModel):
     fitness: str
     stress : str
 
+
+class ChatResponse(BaseModel):
+    success: bool
+    response: str
+    tokens_used: int = 0
+    error: Optional[str] = None
+
+
 class RecommendationRequest(BaseModel):
     daily_checkin: DailyCheckInData
+
+
+# Application Lifecycle
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Initialize Benny when API starts"""
+    global benny
+    try:
+        logger.info("Initializing Benny AI...")
+        benny = BennyWellnessAI()
+        logger.info("Benny AI ready!")
+    except Exception as e:
+        logger.error(f"Failed to initialize Benny: {e}")
+        raise
+
+    yield
+
+    logger.info("Shutting down Benny AI service")
+
+# FastAPI Application
+app = FastAPI(
+    title="Benny Wellness AI",
+    version="1.2.0",
+    description="AI microservice for wellness coaching",
+    lifespan=lifespan
+)
+
+
+# CORS Configuration
+@property
+def allowed_origins():
+    """Get allowed CORS origins."""
+    return [
+        settings.frontend_url,
+        settings.backend_url,
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:3000"
+    ]
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        settings.frontend_url,
+        settings.backend_url,
+        "http://localhost:5173",
+        "http://localhost:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:8000",
+        "http://127.0.0.1:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"]
+)
+
 
 # API ENDPOINTS
 @app.get("/")
 async def root():
-    """Basic info endpoint"""
+    """Service information endpoint"""
     return {
         "service": "Benny Wellness AI",
-        "version": "1.0.0",
+        "version": "1.2.0",
         "endpoints": {
             "chat": "/chat",
             "recommend": "/recommend",
@@ -100,20 +133,17 @@ async def health():
 @app.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
-        Chat with Benny
+    Chat with Benny AI
     """
     # Benny not responding
     if not benny:
-        return ChatResponse(
-            success=False,
-            response="Benny is taking a break. Try again in a moment.",
-            tokens_used=0
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI service not initialized"
         )
 
     try:
-        # Call benny with timeout
-        result = await asyncio.wait_for(
-            benny.chat(request.message), timeout=30.0)
+        result = await benny.chat(request.message)
 
         return ChatResponse(
             success=result["success"],
@@ -121,35 +151,29 @@ async def chat(request: ChatRequest):
             tokens_used=result.get("tokens_used", 0),
             error=result.get("error")
         )
-    except asyncio.TimeoutError:
-        return ChatResponse(
-            success=False,
-            response="Benny: I'm thinking extra hard, could you ask me again?",
-            error="timeout"
-        )
     except Exception as e:
-        print(f"Chat error: {e}")
-        return ChatResponse(
-            success=False,
-            response="Benny: Having technical difficulties. Let's try again.",
-            error=str(e)
+        logger.error(f"Chat error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to process chat request"
         )
-    
+
+
 @app.post("/recommend", response_model=ChatResponse)
 async def recommend(request: RecommendationRequest):
     """
-    Get wellness rec based on daily check-in
+    Get wellness recommendation based on daily check-in.
+    Analyzes check-in data and provides targeted wellness advide
     """
     if not benny:
-        return ChatResponse(
-            success=False,
-            response="Benny is taking a break. Try again later",
-            tokens_used=0
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="AI service not initialized"
         )
     try:
-        # call benny with timeout
-        result = await asyncio.wait_for(
-            benny.recommend(request.daily_checkin.dict(exclude_unset=True)), timeout=30.0)
+        result = await benny.recommend(
+            request.daily_checkin.model_dump()
+        )
         
         return ChatResponse(
             success=result["success"],
@@ -157,23 +181,20 @@ async def recommend(request: RecommendationRequest):
             tokens_used=result.get("tokens_used", 0),
             error=result.get("error")
         )
-    except asyncio.TimeoutError:
-        return ChatResponse(
-            success=False,
-            response="Benny is thinking extra hard. Try again later",
-            tokens_used=0,
-            error="timeout"
-        )
+
     except Exception as e:
-        print(f"Recommendation error: {e}")
-        return ChatResponse(
-            success=False,
-            response="Benny is having technical difficulties. Try again later",
-            tokens_used=0,
-            error=str(e)
+        logger.error(f"Recommendation error: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to process recommendation request"
         )
 
-# RUN SERVER
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8001, reload=True)
+    logger.info(f"Starting Benny AI Service on {settings.host}:{settings.port}")
+    uvicorn.run(
+        "src.api.main:app",
+        host=settings.host,
+        port=settings.port,
+        reload=True
+    )

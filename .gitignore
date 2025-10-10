@@ -4,6 +4,8 @@
 .env.*.local
 .env.development
 .env.production
+benny-backend/.env
+benny-ai-service/.env
 
 # Python
 __pycache__/

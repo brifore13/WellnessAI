@@ -1,93 +1,91 @@
-About Benny
-Tech Stack:
-AI Model: Azure OpenAI GPT-3.5-Turbo
-Backend: Python FastAPI
-Personality: Custom prompt engineering for wellness coaching
-Integration: REST API
+# Benny AI Service
 
-1. Set Up & Run
-# create virtual environment
-cd benny-ai-service
-python -m venv benny-env
-source benny-env/bin/activate  # macOS/Linux benny-env\Scripts\activate   # Windows
+AI microservice for wellness coaching powered by Azure OpenAI. Provides conversational chat and personalized wellness recommendations.
+
+## Tech Stack
+
+- **Framework**: FastAPI (async)
+- **AI**: Azure OpenAI (GPT-3.5/4)
+- **Validation**: Pydantic v2
+- **Architecture**: Stateless microservice
+
+## Project Structure
+src/
+├── api/
+│   └── main.py          # FastAPI endpoints
+└── core/
+├── config.py        # Pydantic settings
+└── benny.py         # AI logic
+
+## Setup
+
+### Prerequisites
+
+- Python 3.12+
+- Azure OpenAI API access
+
+### Installation
+- bash
+# Install dependencies
 pip install -r requirements.txt
-# run
-cd src/api
-python main.py
 
-port: http://127.0.0.1:8001
+# Configure environment
+cp .env.example .env
+# Add your Azure OpenAI credentials to .env
 
-2. API Endpoints
+# Start service
+python -m src.api.main
 
-HEALTH CHECK
+Service runs on http://localhost:8001
+
+## Environmental Variables
+# Azure OpenAI (Required)
+AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com
+AZURE_OPENAI_API_KEY=your-api-key-here
+AZURE_OPENAI_DEPLOYMENT=gpt-35-turbo
+
+# CORS (Optional)
+FRONTEND_URL=http://localhost:5173
+BACKEND_URL=http://localhost:8000
+
+# Server (Optional)
+HOST=127.0.0.1
+PORT=8001
+
+## API Endpoints
+# Health Check
 GET /health
-
-Returns: {"status": "healthy", "benny_ready": true}
-
-CHAT
+# Chat with Benny
 POST /chat
 Content-Type: application/json
 
 {
-    "message": "How can I eat more fiber?"
+  "message": "How can I improve my sleep?"
 }
 
 Response:
-
-json 
 {
-    "success": true,
-    "response": "Fiber is an important part of healthy digestion...",
-    "tokens_used": 300
-    "error": null
+  "success": true,
+  "response": "Try establishing a consistent bedtime routine...",
+  "tokens_used": 87
 }
-
-React Example
-// Chat with Benny
-const chatWithBenny = async (message) => {
-  const response = await fetch('http://localhost:8001/chat', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ message }),
-  });
-  
-  const data = await response.json();
-  return data.success ? data.response : "Benny is taking a break!";
-};
-
-RECOMMEND
+# Get Wellness Recommendation
 POST /recommend
 Content-Type: application/json
 
 {
-    "nutrition": "",
-    "fitness": "",
-    "stress": "",
-    "sleep: ""
+  "daily_checkin": {
+    "nutrition": "Good",
+    "sleep": "Poor",
+    "fitness": "Yes, completed",
+    "stress": "Moderate"
+  }
 }
 
-Response
+Response:
 {
-    "success": true,
-    "response": "Focus on establishing a consistent bedtime routine...",
-    "tokens_used": 32,
-    "error": null
+  "success": true,
+  "response": "Prioritize 7-8 hours of sleep tonight by going to bed 30 minutes earlier.",
+  "tokens_used": 45
 }
-
-Test Benny in the Browser
-Use http://127.0.0.1:8001/docs to test endpoints in the browser
-
-Frontend Integration
-chat function: fetch('http://localhost:8001/chat')
-
-
-Citations
-Claude AI used for planning and implementing chatbot development.
-- Benny testing generation
-Youtube Videos for learning about Azure, OpenAI, chatbot development
-https://youtu.be/jQyYeYWD97I?si=8GYBJ7TQR6ChuIBh
-https://www.youtube.com/watch?v=u0AUwOKxUsg
-https://www.youtube.com/watch?v=fQ9RFR1KTbY
-https://www.youtube.com/watch?v=GD7MnIwAxYM
-https://www.youtube.com/watch?v=GD7MnIwAxYM
 
