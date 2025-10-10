@@ -17,7 +17,7 @@ const ChatHistory = () => {
     const loadRecentMessages = async () => {
         try {
             setLoading(true);
-            const response = await axios.get(`${BACKEND_URL}/api/chat/recent`);
+            const response = await axios.get(`${BACKEND_URL}/api/chat/history`);
             if (response.data.success) {
                 setRecentMessages(response.data.messages);
             }
@@ -77,34 +77,28 @@ const ChatHistory = () => {
                 ) : (
                     <>
                         {recentMessages.map((message) => {
-                            if (message.user_or_benny === 1) {
+                            if (message.is_benny === 1) {
                             // Benny's message
                             return (
-                                <div key={`${message.date}-${message.sequence_number}`} className="mb-4">
+                                <div key={message.id} className="mb-4">
                                 <div className="flex items-start">
                                     <img src={bennyIcon} alt="Benny" className="w-8 h-8 mr-2 rounded-full" />
                                     <div className="bg-gray-100 p-4 rounded-lg">
-                                    <p>{message.entry_text}</p>
+                                    <p>{message.message_text}</p>
                                     </div>
                                 </div>
-                                <div className="text-xs text-gray-400 ml-10 mt-1">
-                                    {formatDateTime(message.date)}
-                                </div>
-                        </div>
+                            </div>
                     );
                     } else {
                         // User's message
                         return (
-                        <div key={`${message.date}-${message.sequence_number}`} className="mb-4">
+                        <div key={message.id} className="mb-4">
                             <div className="flex justify-end">
-                            <div className="bg-blue-100 p-4 rounded-lg max-w-md">
-                                <p>{message.entry_text}</p>
+                                <div className="bg-blue-100 p-4 rounded-lg max-w-md">
+                                <p>{message.message_text}</p>
                             </div>
                             </div>
-                            <div className="text-xs text-gray-400 text-right mr-2 mt-1">
-                            {formatDateTime(message.date)}
                             </div>
-                        </div>
                         );
                     }
                 })}

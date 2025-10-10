@@ -3,7 +3,8 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from authlib.integrations.starlette_client import OAuth
 from config import SECRET_KEY
 import jwt  # pip install pyjwt
-from config import SECRET_KEY, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from app.core.config import settings
+SECRET_KEY = settings.secret_key
 
 oauth = OAuth()
 
